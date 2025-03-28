@@ -121,7 +121,7 @@ export default function PersistentDrawerLeft({ children }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {pathname === "/" ? "Inventory Mangement" : routes.find((item) => item.path === pathname)?.name}
+            {pathname === "/" ? "Khata Mangement" : routes.find((item) => item.path === pathname)?.name}
           </Typography>
           <IconButton sx={{ marginLeft: "auto" }} color="inherit" LinkComponent={Link} href={"/auth/signout"}>
             <LogoutIcon />

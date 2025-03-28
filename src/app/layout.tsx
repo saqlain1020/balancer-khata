@@ -31,6 +31,17 @@ export default async function RootLayout({
         <body>
           <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>{children}</ThemeProvider>
+            <div style={{ position: "fixed", bottom: "10px", right: "10px", fontSize: "12px", opacity: 0.7 }}>
+              Created by{" "}
+              <a
+                href="https://linkedin.com/in/saqlain1020"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "inherit", textDecoration: "underline" }}
+              >
+                @saqlain1020
+              </a>
+            </div>
           </AppRouterCacheProvider>
         </body>
       </html>
