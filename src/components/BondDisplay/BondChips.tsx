@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Person, BondCategory } from "../../types/bonds";
 import {
   Box,
@@ -12,10 +12,15 @@ import {
   AccordionSummary,
   AccordionDetails,
   useTheme,
+  IconButton,
+  Tooltip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CategoryIcon from "@mui/icons-material/Category";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 interface BondChipsProps {
   people: Person[];
@@ -49,6 +54,40 @@ const isPartOfRange = (number: number, bonds: number[]): boolean => {
 
 const BondChips: React.FC<BondChipsProps> = ({ people, chipColors = true }) => {
   const theme = useTheme();
+  // Add state for copy notification
+  const [copyNotification, setCopyNotification] = useState({
+    open: false,
+    message: "",
+  });
+
+  const handleCopyBonds = (bonds: number[]) => {
+    // Create comma-separated string from bond numbers
+    const bondString = bonds.join(", ");
+
+    // Copy to clipboard
+    navigator.clipboard
+      .writeText(bondString)
+      .then(() => {
+        setCopyNotification({
+          open: true,
+          message: `${bonds.length} bond numbers copied to clipboard`,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        setCopyNotification({
+          open: true,
+          message: "Failed to copy to clipboard",
+        });
+      });
+  };
+
+  const handleCloseCopyNotification = () => {
+    setCopyNotification({
+      ...copyNotification,
+      open: false,
+    });
+  };
 
   if (!people || people.length === 0) {
     return (
@@ -106,11 +145,31 @@ const BondChips: React.FC<BondChipsProps> = ({ people, chipColors = true }) => {
                         },
                       }}
                     >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
                         <CategoryIcon sx={{ mr: 1 }} />
                         <Typography fontWeight={500}>
                           {category.name} ({category.bonds.length})
                         </Typography>
+                        <Tooltip title="Copy all bond numbers">
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent accordion from toggling
+                              handleCopyBonds(category.bonds);
+                            }}
+                            sx={{
+                              ml: 2,
+                              p: 0.5,
+                              color: "rgba(0, 0, 0, 0.7)",
+                              "&:hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                                color: "rgba(0, 0, 0, 1)",
+                              },
+                            }}
+                          >
+                            <ContentCopyIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
                       </Box>
                     </AccordionSummary>
                     <AccordionDetails sx={{ p: 2, backgroundColor: "rgba(40, 40, 40, 0.9)" }}>
@@ -123,6 +182,18 @@ const BondChips: React.FC<BondChipsProps> = ({ people, chipColors = true }) => {
           </Grid>
         ))}
       </Grid>
+
+      {/* Add notification for copy */}
+      <Snackbar
+        open={copyNotification.open}
+        autoHideDuration={3000}
+        onClose={handleCloseCopyNotification}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseCopyNotification} severity="success" variant="filled">
+          {copyNotification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

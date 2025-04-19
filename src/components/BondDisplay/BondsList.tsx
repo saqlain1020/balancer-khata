@@ -20,11 +20,14 @@ import {
   Tooltip,
   CircularProgress,
   Collapse,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { IBondCategory } from "../../../lib/models/Bond";
 import BondFormWithAutocomplete from "./BondFormWithAutocomplete";
 import { deleteBond } from "../../app/actions/bond";
@@ -53,6 +56,10 @@ const BondsList: React.FC<BondsListProps> = ({ bonds, onBondUpdated }) => {
     customer: string;
     categories: IBondCategory[];
   } | null>(null);
+  const [copyNotification, setCopyNotification] = useState({
+    open: false,
+    message: "",
+  });
 
   const handleToggleExpand = (bondId: string) => {
     setExpandedId(expandedId === bondId ? null : bondId);
@@ -102,6 +109,33 @@ const BondsList: React.FC<BondsListProps> = ({ bonds, onBondUpdated }) => {
     } finally {
       setDeleting(false);
     }
+  };
+
+  const handleCopyBonds = (bonds: number[]) => {
+    const bondString = bonds.join(", ");
+
+    navigator.clipboard
+      .writeText(bondString)
+      .then(() => {
+        setCopyNotification({
+          open: true,
+          message: `${bonds.length} bond numbers copied to clipboard`,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        setCopyNotification({
+          open: true,
+          message: "Failed to copy to clipboard",
+        });
+      });
+  };
+
+  const handleCloseCopyNotification = () => {
+    setCopyNotification({
+      ...copyNotification,
+      open: false,
+    });
   };
 
   // Calculate total bonds for a record
@@ -196,9 +230,20 @@ const BondsList: React.FC<BondsListProps> = ({ bonds, onBondUpdated }) => {
                     <Box sx={{ ml: 7, mt: 2 }}>
                       {bond.categories.map((category, catIndex) => (
                         <Box key={catIndex} sx={{ mb: 2 }}>
-                          <Typography variant="subtitle2" fontWeight={500}>
-                            {category.name} ({category.bonds.length})
-                          </Typography>
+                          <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Typography variant="subtitle2" fontWeight={500}>
+                              {category.name} ({category.bonds.length})
+                            </Typography>
+                            <Tooltip title="Copy all bond numbers">
+                              <IconButton
+                                size="small"
+                                onClick={() => handleCopyBonds(category.bonds)}
+                                sx={{ ml: 1, p: 0.5 }}
+                              >
+                                <ContentCopyIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
                           <Paper variant="outlined" sx={{ p: 1, mt: 1, bgcolor: "background.default" }}>
                             <Typography sx={{ fontFamily: "monospace", fontSize: "0.85rem" }}>
                               {formatBonds(category.bonds)}
@@ -257,6 +302,18 @@ const BondsList: React.FC<BondsListProps> = ({ bonds, onBondUpdated }) => {
           editBond={bondToEdit}
         />
       )}
+
+      {/* Add notification for copy */}
+      <Snackbar
+        open={copyNotification.open}
+        autoHideDuration={3000}
+        onClose={handleCloseCopyNotification}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseCopyNotification} severity="success" variant="filled">
+          {copyNotification.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
