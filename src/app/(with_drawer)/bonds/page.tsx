@@ -13,11 +13,24 @@ import {
   CircularProgress,
   Tabs,
   Tab,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Chip,
+  Paper,
+  Grid,
+  AlertTitle,
 } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ListIcon from "@mui/icons-material/List";
 import ViewComfyIcon from "@mui/icons-material/ViewComfy";
+import LinkIcon from "@mui/icons-material/Link";
+import LaunchIcon from "@mui/icons-material/Launch";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import BondDisplay from "../../../components/BondDisplay";
 import BondChips from "../../../components/BondDisplay/BondChips";
 import BondFormWithAutocomplete from "../../../components/BondDisplay/BondFormWithAutocomplete";
@@ -63,6 +76,15 @@ export default function BondsPage() {
     message: "",
     severity: "success" as "success" | "error",
   });
+
+  // Prize checking links
+  const prizeCheckingLinks = [
+    {
+      title: "Central Directorate of National Savings (CDNS)",
+      url: "https://www.savings.gov.pk/latest/results.php#focus",
+      description: "Official prize bond draw results and verification service",
+    },
+  ];
 
   // Load bond data from MongoDB
   const loadBondData = async () => {
@@ -140,6 +162,7 @@ export default function BondsPage() {
           >
             <Tab icon={<ListIcon />} label="MANAGE" />
             <Tab icon={<ViewComfyIcon />} label="DISPLAY" />
+            <Tab icon={<EmojiEventsIcon />} label="CHECK PRIZES" />
           </Tabs>
         </CardContent>
       </Card>
@@ -189,6 +212,57 @@ export default function BondsPage() {
         ) : (
           <BondChips people={mapToBondDisplayFormat(bondData)} />
         )}
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={2}>
+        <Paper sx={{ p: 3, bgcolor: "background.paper" }}>
+          <Typography variant="h6" fontWeight={500} gutterBottom>
+            Check Your Prize Bonds
+          </Typography>
+
+          <Typography variant="body1" paragraph>
+            Use this official resource to check if your bond numbers have won any prizes:
+          </Typography>
+
+          <List>
+            {prizeCheckingLinks.map((link, index) => (
+              <React.Fragment key={index}>
+                {index > 0 && <Divider component="li" />}
+                <ListItem
+                  component="a"
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    textDecoration: "none",
+                    color: "text.primary",
+                    borderRadius: 1,
+                    p: 2,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                      borderColor: "primary.main",
+                    },
+                  }}
+                >
+                  <ListItemIcon>
+                    <LinkIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        {link.title}
+                        <LaunchIcon sx={{ ml: 1, fontSize: "0.8rem", color: "text.secondary" }} />
+                      </Box>
+                    }
+                    secondary={link.description}
+                  />
+                </ListItem>
+              </React.Fragment>
+            ))}
+          </List>
+        </Paper>
       </TabPanel>
 
       <Snackbar
