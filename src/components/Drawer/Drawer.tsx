@@ -23,6 +23,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import SavingsIcon from "@mui/icons-material/Savings";
 
 const drawerWidth = 240;
 
@@ -30,6 +31,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
+  width: "100%",
   padding: theme.spacing(3),
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
@@ -85,6 +87,11 @@ const routes = [
     name: "Add Customer",
     path: "/customers/add",
     icon: <AddIcon />,
+  },
+  {
+    name: "Bonds",
+    path: "/bonds",
+    icon: <SavingsIcon />,
   },
   {
     name: "Manage Users",
