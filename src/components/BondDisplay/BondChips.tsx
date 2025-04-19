@@ -62,7 +62,7 @@ const BondChips: React.FC<BondChipsProps> = ({ people, chipColors = true }) => {
 
   const handleCopyBonds = (bonds: number[]) => {
     // Create comma-separated string from bond numbers
-    const bondString = bonds.join(", ");
+    const bondString = bonds.join(",");
 
     // Copy to clipboard
     navigator.clipboard

@@ -112,7 +112,7 @@ const BondsList: React.FC<BondsListProps> = ({ bonds, onBondUpdated }) => {
   };
 
   const handleCopyBonds = (bonds: number[]) => {
-    const bondString = bonds.join(", ");
+    const bondString = bonds.join(",");
 
     navigator.clipboard
       .writeText(bondString)
